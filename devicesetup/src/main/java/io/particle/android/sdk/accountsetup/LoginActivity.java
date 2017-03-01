@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -142,8 +143,8 @@ public class LoginActivity extends BaseActivity {
 
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            passwordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            passwordView.setError(getString(R.string.error_field_required));
             focusView = passwordView;
             cancel = true;
         }
@@ -213,18 +214,17 @@ public class LoginActivity extends BaseActivity {
                 // FIXME: check specifically for 401 errors
                 // and set a better error message?  (Seems like
                 // this works fine already...)
-                passwordView.setError(error.getBestMessage());
-                passwordView.requestFocus();
+                new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle(R.string.error_sign_in_title)
+                        .setMessage(R.string.error_sign_in_message)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                        .show();
             }
         });
     }
 
     private boolean isEmailValid(String email) {
         return truthy(email) && email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return (password.length() > 0);
     }
 
 }
